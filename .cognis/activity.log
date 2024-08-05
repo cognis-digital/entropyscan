@@ -1,3 +1,4 @@
 2024-06-01T08:00:00  refactor: I have altered the code. pray I don't alter it further
 2024-06-22T15:17:07  docs(docs): add color + severity icons
 2024-07-14T10:34:14  perf(format): wire the MCP tool schema
+2024-08-05T17:51:21  style(core): simplify the walker
