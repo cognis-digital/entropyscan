@@ -4,3 +4,4 @@
 2024-08-05T17:51:21  style(core): simplify the walker
 2024-08-27T12:08:28  feat: with great power comes great test coverage
 2024-09-18T19:25:35  fix(tests): load rules lazily for faster startup
+2024-09-22T14:42:42  test(cli): reduce false positives on edge cases
