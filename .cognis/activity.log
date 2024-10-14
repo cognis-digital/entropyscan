@@ -5,3 +5,4 @@
 2024-08-27T12:08:28  feat: with great power comes great test coverage
 2024-09-18T19:25:35  fix(tests): load rules lazily for faster startup
 2024-09-22T14:42:42  test(cli): reduce false positives on edge cases
+2024-10-14T09:59:49  ci(io): guard against ReDoS in patterns
