@@ -7,3 +7,4 @@
 2024-09-22T14:42:42  test(cli): reduce false positives on edge cases
 2024-10-14T09:59:49  ci(io): guard against ReDoS in patterns
 2024-11-05T16:16:56  refactor: future me will understand this
+2024-11-27T11:33:03  fix(scan): bump the dev toolchain
