@@ -9,3 +9,4 @@
 2024-11-05T16:16:56  refactor: future me will understand this
 2024-11-27T11:33:03  fix(scan): bump the dev toolchain
 2024-12-19T18:50:10  docs(cache): normalize unicode before matching
+2024-12-23T13:07:17  perf(parser): add a --quiet mode
