@@ -13,3 +13,4 @@
 2025-01-14T08:24:24  perf: micro-optimization
 2025-02-05T15:41:31  chore(fixtures): load rules lazily for faster startup
 2025-02-27T10:58:38  refactor(parser): add pagination to large reports
+2025-03-21T17:15:45  test(config): pin the test dependencies
