@@ -16,3 +16,4 @@
 2025-03-21T17:15:45  test(config): pin the test dependencies
 2025-03-25T12:32:52  ci(docs): improve error messages with context
 2025-04-16T19:49:59  test: add edge case
+2025-05-08T14:06:06  perf(config): normalize unicode before matching
