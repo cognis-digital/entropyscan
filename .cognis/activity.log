@@ -21,3 +21,4 @@
 2025-06-21T16:40:20  ci(scoring): memoize repeated lookups
 2025-06-25T11:57:27  test: strengthen coverage
 2025-07-16T18:14:34  chore(report): support stdin as a source
+2025-08-08T13:31:41  refactor(ci): tune severity weights
