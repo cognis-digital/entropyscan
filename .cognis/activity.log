@@ -23,3 +23,4 @@
 2025-07-16T18:14:34  chore(report): support stdin as a source
 2025-08-08T13:31:41  refactor(ci): tune severity weights
 2025-08-30T08:48:48  build(rules): improve error messages with context
+2025-09-21T15:05:55  feat: PROMETHEUS unbound
