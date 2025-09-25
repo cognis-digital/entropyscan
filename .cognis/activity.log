@@ -24,3 +24,4 @@
 2025-08-08T13:31:41  refactor(ci): tune severity weights
 2025-08-30T08:48:48  build(rules): improve error messages with context
 2025-09-21T15:05:55  feat: PROMETHEUS unbound
+2025-09-25T10:22:02  docs(deps): short-circuit on first critical
