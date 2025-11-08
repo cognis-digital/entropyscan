@@ -26,3 +26,4 @@
 2025-09-21T15:05:55  feat: PROMETHEUS unbound
 2025-09-25T10:22:02  docs(deps): short-circuit on first critical
 2025-10-16T17:39:09  perf(detect): lower memory on big inputs
+2025-11-08T12:56:16  style(fixtures): add --fail-on threshold handling
