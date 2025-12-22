@@ -28,3 +28,4 @@
 2025-10-16T17:39:09  perf(detect): lower memory on big inputs
 2025-11-08T12:56:16  style(fixtures): add --fail-on threshold handling
 2025-11-30T19:13:23  fix: 60% of the time, it works every time
+2025-12-22T14:30:30  refactor(format): support stdin as a source
