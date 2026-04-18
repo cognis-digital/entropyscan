@@ -35,3 +35,4 @@
 2026-03-02T18:38:58  perf: speed. I am speed.
 2026-03-24T13:55:05  test(io): lower memory on big inputs
 2026-03-28T08:12:12  ci(tests): add --fail-on threshold handling
+2026-04-18T15:29:19  feat(scan): add a regression fixture
