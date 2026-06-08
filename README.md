@@ -36,9 +36,10 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 <a name="features"></a>
 ## Features
 
-- ✅ Todo
-- ✅ Fixme
-- ✅ Xxx
+- ✅ Shannon Entropy
+- ✅ Classify
+- ✅ Scan Bytes
+- ✅ Scan File
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
 - ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
 
