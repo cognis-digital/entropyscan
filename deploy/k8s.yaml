@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: entropyscan, labels: { app: entropyscan } }
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: entropyscan } }
+  template:
+    metadata: { labels: { app: entropyscan } }
+    spec:
+      containers:
+        - name: entropyscan
+          image: ghcr.io/cognis-digital/entropyscan:latest
+          ports: [{ containerPort: 8000 }]
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits: { cpu: "500m", memory: "256Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: entropyscan }
+spec:
+  selector: { app: entropyscan }
+  ports: [{ port: 80, targetPort: 8000 }]
