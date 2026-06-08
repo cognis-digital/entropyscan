@@ -1,61 +1,236 @@
-"""ENTROPYSCAN core — Flag packed/encrypted/high-entropy regions in files."""
+"""Core entropy-scanning engine for ENTROPYSCAN.
+
+Shannon entropy is measured in bits-per-byte (0.0 .. 8.0). Random/encrypted
+or strongly-compressed data trends toward 8.0; structured data (code, text,
+tables, padding) sits well below. We slide a fixed-size window across the
+file, score each block, and classify regions by severity.
+"""
 from __future__ import annotations
-import json, time
+
+import math
+import os
 from dataclasses import dataclass, field, asdict
-from pathlib import Path
+from typing import Iterable, List, Optional
 
-TOOL_NAME = "ENTROPYSCAN"
-TOOL_VERSION = "0.1.0"
+# Entropy thresholds in bits/byte. Tuned to match common forensic practice:
+# >7.5 is the classic "encrypted/compressed" heuristic used by binwalk et al.
+CRITICAL_THRESHOLD = 7.5   # almost certainly encrypted/compressed/packed
+HIGH_THRESHOLD = 6.8       # likely compressed/obfuscated
+MEDIUM_THRESHOLD = 5.5     # mixed / suspicious
+# below MEDIUM is considered low (plain structured data)
 
-SEVERITIES = {"critical": 4, "high": 3, "medium": 2, "low": 1, "info": 0}
+SEVERITY_ORDER = {"low": 0, "medium": 1, "high": 2, "critical": 3}
 
-# Minimal, dependency-free finding model so this tool runs standalone.
+DEFAULT_BLOCK_SIZE = 4096
+MAX_BYTES_DEFAULT = 256 * 1024 * 1024  # 256 MiB safety cap
+
+
+def shannon_entropy(data: bytes) -> float:
+    """Return Shannon entropy of ``data`` in bits per byte (0.0 .. 8.0)."""
+    if not data:
+        return 0.0
+    counts = [0] * 256
+    for b in data:
+        counts[b] += 1
+    n = len(data)
+    entropy = 0.0
+    for c in counts:
+        if c:
+            p = c / n
+            entropy -= p * math.log2(p)
+    return entropy
+
+
+def classify(entropy: float) -> str:
+    """Map an entropy value to a severity label."""
+    if entropy >= CRITICAL_THRESHOLD:
+        return "critical"
+    if entropy >= HIGH_THRESHOLD:
+        return "high"
+    if entropy >= MEDIUM_THRESHOLD:
+        return "medium"
+    return "low"
+
+
 @dataclass
-class Finding:
-    id: str
+class BlockResult:
+    index: int
+    offset: int
+    size: int
+    entropy: float
     severity: str
-    title: str
-    where: str = ""
-    detail: str = ""
-    remediation: str = ""
+
+    def to_dict(self) -> dict:
+        return asdict(self)
+
 
 @dataclass
-class ScanResult:
-    tool: str = TOOL_NAME
-    version: str = TOOL_VERSION
-    target: str = ""
-    findings: list = field(default_factory=list)
-    elapsed_ms: int = 0
+class ScanReport:
+    path: str
+    size: int
+    block_size: int
+    bytes_scanned: int
+    blocks: List[BlockResult] = field(default_factory=list)
+    truncated: bool = False
+
+    # --- derived metrics ---
     @property
-    def score(self) -> int:
-        return sum(SEVERITIES.get(f.severity, 0) for f in self.findings)
+    def mean_entropy(self) -> float:
+        if not self.blocks:
+            return 0.0
+        return sum(b.entropy for b in self.blocks) / len(self.blocks)
 
-# Tool-specific heuristics live here. Start with a small, honest rule set and
-# grow it via PRs (see CONTRIBUTING.md). Each rule = (id, severity, needle, title, fix).
-RULES = [
-    ("ENT-001", "high", "TODO", "Unresolved TODO / placeholder left in input", "Resolve before shipping."),
-    ("ENT-002", "medium", "FIXME", "FIXME marker found", "Address the flagged issue."),
-    ("ENT-003", "low", "XXX", "XXX marker found", "Review the flagged section."),
-]
+    @property
+    def max_entropy(self) -> float:
+        return max((b.entropy for b in self.blocks), default=0.0)
 
-def scan(target: str, **opts) -> ScanResult:
-    t0 = time.time()
-    res = ScanResult(target=str(target))
-    p = Path(target)
-    files = [p] if p.is_file() else (sorted(p.rglob("*")) if p.exists() else [])
-    for fp in files:
-        if not fp.is_file():
-            continue
-        try:
-            text = fp.read_text(encoding="utf-8", errors="ignore")
-        except Exception:
-            continue
-        for rid, sev, needle, title, fix in RULES:
-            if needle in text:
-                res.findings.append(Finding(rid, sev, title, where=str(fp), remediation=fix))
-    res.elapsed_ms = int((time.time() - t0) * 1000)
-    return res
+    @property
+    def min_entropy(self) -> float:
+        return min((b.entropy for b in self.blocks), default=0.0)
 
-def to_json(res: ScanResult) -> str:
-    d = asdict(res); d["score"] = res.score
-    return json.dumps(d, indent=2)
+    @property
+    def overall_severity(self) -> str:
+        worst = "low"
+        for b in self.blocks:
+            if SEVERITY_ORDER[b.severity] > SEVERITY_ORDER[worst]:
+                worst = b.severity
+        return worst
+
+    def severity_counts(self) -> dict:
+        counts = {"low": 0, "medium": 0, "high": 0, "critical": 0}
+        for b in self.blocks:
+            counts[b.severity] += 1
+        return counts
+
+    def flagged_blocks(self, min_severity: str = "high") -> List[BlockResult]:
+        floor = SEVERITY_ORDER[min_severity]
+        return [b for b in self.blocks if SEVERITY_ORDER[b.severity] >= floor]
+
+    def regions(self, min_severity: str = "high") -> List[dict]:
+        """Coalesce consecutive flagged blocks into contiguous regions."""
+        floor = SEVERITY_ORDER[min_severity]
+        out: List[dict] = []
+        cur: Optional[dict] = None
+        for b in self.blocks:
+            if SEVERITY_ORDER[b.severity] >= floor:
+                if cur is None:
+                    cur = {
+                        "start": b.offset,
+                        "end": b.offset + b.size,
+                        "max_entropy": b.entropy,
+                        "severity": b.severity,
+                        "blocks": 1,
+                    }
+                else:
+                    cur["end"] = b.offset + b.size
+                    cur["blocks"] += 1
+                    if b.entropy > cur["max_entropy"]:
+                        cur["max_entropy"] = b.entropy
+                    if SEVERITY_ORDER[b.severity] > SEVERITY_ORDER[cur["severity"]]:
+                        cur["severity"] = b.severity
+            else:
+                if cur is not None:
+                    out.append(cur)
+                    cur = None
+        if cur is not None:
+            out.append(cur)
+        return out
+
+    def to_dict(self) -> dict:
+        return {
+            "path": self.path,
+            "size": self.size,
+            "block_size": self.block_size,
+            "bytes_scanned": self.bytes_scanned,
+            "truncated": self.truncated,
+            "mean_entropy": round(self.mean_entropy, 4),
+            "max_entropy": round(self.max_entropy, 4),
+            "min_entropy": round(self.min_entropy, 4),
+            "overall_severity": self.overall_severity,
+            "severity_counts": self.severity_counts(),
+            "blocks": [b.to_dict() for b in self.blocks],
+        }
+
+
+def scan_bytes(
+    data: bytes,
+    *,
+    path: str = "<bytes>",
+    block_size: int = DEFAULT_BLOCK_SIZE,
+) -> ScanReport:
+    """Scan an in-memory buffer and return a :class:`ScanReport`."""
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    blocks: List[BlockResult] = []
+    n = len(data)
+    idx = 0
+    offset = 0
+    while offset < n:
+        chunk = data[offset:offset + block_size]
+        ent = shannon_entropy(chunk)
+        blocks.append(
+            BlockResult(
+                index=idx,
+                offset=offset,
+                size=len(chunk),
+                entropy=round(ent, 4),
+                severity=classify(ent),
+            )
+        )
+        idx += 1
+        offset += block_size
+    return ScanReport(
+        path=path,
+        size=n,
+        block_size=block_size,
+        bytes_scanned=n,
+        blocks=blocks,
+        truncated=False,
+    )
+
+
+def scan_file(
+    path: str,
+    *,
+    block_size: int = DEFAULT_BLOCK_SIZE,
+    max_bytes: int = MAX_BYTES_DEFAULT,
+) -> ScanReport:
+    """Stream a file from disk and compute per-block entropy."""
+    if block_size <= 0:
+        raise ValueError("block_size must be positive")
+    total_size = os.path.getsize(path)
+    blocks: List[BlockResult] = []
+    idx = 0
+    offset = 0
+    scanned = 0
+    truncated = False
+    with open(path, "rb") as fh:
+        while True:
+            if scanned >= max_bytes:
+                truncated = offset < total_size
+                break
+            to_read = min(block_size, max_bytes - scanned)
+            chunk = fh.read(to_read)
+            if not chunk:
+                break
+            ent = shannon_entropy(chunk)
+            blocks.append(
+                BlockResult(
+                    index=idx,
+                    offset=offset,
+                    size=len(chunk),
+                    entropy=round(ent, 4),
+                    severity=classify(ent),
+                )
+            )
+            idx += 1
+            offset += len(chunk)
+            scanned += len(chunk)
+    return ScanReport(
+        path=path,
+        size=total_size,
+        block_size=block_size,
+        bytes_scanned=scanned,
+        blocks=blocks,
+        truncated=truncated,
+    )
