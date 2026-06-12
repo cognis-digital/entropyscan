@@ -16,7 +16,7 @@
 </div>
 
 ```bash
-pip install cognis-entropyscan
+pip install "git+https://github.com/cognis-digital/entropyscan.git"
 entropyscan scan .            # → prioritized findings in seconds
 ```
 
@@ -49,7 +49,7 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 ## Quick start
 
 ```bash
-pip install cognis-entropyscan
+pip install "git+https://github.com/cognis-digital/entropyscan.git"
 entropyscan --version
 entropyscan scan .                       # scan current project
 entropyscan scan . --format json         # machine-readable
