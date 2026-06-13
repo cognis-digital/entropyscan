@@ -63,7 +63,7 @@ class TestScan(unittest.TestCase):
         path = _mixed_file()
         try:
             from entropyscan import scan_file
-            report = scan_file(path, block_size=256)
+            report = scan_file(path, block_size=512)
             self.assertEqual(report.overall_severity, "critical")
             regions = report.regions("high")
             self.assertTrue(regions)

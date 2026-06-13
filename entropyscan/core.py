@@ -10,7 +10,7 @@ from __future__ import annotations
 import math
 import os
 from dataclasses import dataclass, field, asdict
-from typing import Iterable, List, Optional
+from typing import List, Optional
 
 # Entropy thresholds in bits/byte. Tuned to match common forensic practice:
 # >7.5 is the classic "encrypted/compressed" heuristic used by binwalk et al.
