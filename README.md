@@ -20,6 +20,40 @@ pip install cognis-entropyscan
 entropyscan scan .            # → prioritized findings in seconds
 ```
 
+## Usage — step by step
+
+1. **Install** the CLI:
+
+   ```bash
+   pipx install "git+https://github.com/cognis-digital/entropyscan.git"
+   ```
+
+2. **Scan** a file for high-entropy regions (packed/encrypted/embedded-secret indicators) — the primary command:
+
+   ```bash
+   entropyscan scan suspicious.bin
+   ```
+
+3. **Tune sensitivity** — adjust the analysis window and the severity that counts as a finding:
+
+   ```bash
+   entropyscan scan suspicious.bin --block-size 4096 --min-severity medium
+   ```
+
+4. **Read the output** — `entropyscan` exits `1` when flagged regions are found (else `0`). Emit JSON or write a shareable HTML report:
+
+   ```bash
+   entropyscan scan suspicious.bin --format json -o report.json
+   entropyscan scan suspicious.bin --format html -o report.html
+   ```
+
+5. **Automate in CI** — gate artifacts on high-entropy content:
+
+   ```bash
+   entropyscan scan build/artifact.bin --min-severity high
+   # exit 1 => high-entropy region detected => job fails
+   ```
+
 ## Contents
 
 - [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
