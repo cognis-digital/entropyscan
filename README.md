@@ -20,6 +20,12 @@ pip install "git+https://github.com/cognis-digital/entropyscan.git"
 entropyscan scan .            # → prioritized findings in seconds
 ```
 
+<!-- cognis:layman:start -->
+## What is this?
+
+entropyscan is a command-line tool that checks files for hidden or suspicious content by measuring how "random" the data inside them looks. Encrypted, compressed, or packed data is much more random than normal text or code, so entropyscan highlights those regions as potential threats or anomalies. You point it at a file or folder and get a plain report showing which parts look suspicious, with severity levels from low to critical. It is useful for security analysts, developers, and anyone who needs to quickly spot unusual content — like hidden malware payloads or packed executables — in files on their system or in a CI pipeline.
+<!-- cognis:layman:end -->
+
 ## Contents
 
 - [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
@@ -46,6 +52,42 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 <div align="right"><a href="#top">↑ back to top</a></div>
 
 <a name="quick-start"></a>
+<!-- cognis:install:start -->
+## Install
+
+`entropyscan` is source-available (not published to PyPI) — every method below installs
+straight from GitHub. Pick whichever you prefer; the one-line scripts auto-detect
+the best tool available on your machine.
+
+**One-liner (Linux / macOS):**
+```sh
+curl -fsSL https://raw.githubusercontent.com/cognis-digital/entropyscan/HEAD/install.sh | sh
+```
+
+**One-liner (Windows PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/cognis-digital/entropyscan/HEAD/install.ps1 | iex
+```
+
+**Or install manually — any one of:**
+```sh
+pipx install "git+https://github.com/cognis-digital/entropyscan.git"     # isolated (recommended)
+uv tool install "git+https://github.com/cognis-digital/entropyscan.git"  # uv
+pip install "git+https://github.com/cognis-digital/entropyscan.git"      # pip
+```
+
+**From source:**
+```sh
+git clone https://github.com/cognis-digital/entropyscan.git
+cd entropyscan && pip install .
+```
+
+Then run:
+```sh
+entropyscan --help
+```
+<!-- cognis:install:end -->
+
 ## Quick start
 
 ```bash
