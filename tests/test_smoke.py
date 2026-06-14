@@ -135,5 +135,103 @@ class TestCli(unittest.TestCase):
         self.assertIn(TOOL_VERSION, proc.stdout)
 
 
+class TestHardening(unittest.TestCase):
+    """Tests for input-validation and error-handling improvements."""
+
+    # --- core: scan_file validation ---
+
+    def test_scan_file_nonexistent_raises_file_not_found(self):
+        with self.assertRaises(FileNotFoundError):
+            from entropyscan.core import scan_file
+            scan_file("/no/such/path/xyz.bin")
+
+    def test_scan_file_zero_block_size_raises(self):
+        fd, path = tempfile.mkstemp(suffix=".bin")
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(b"\x00" * 256)
+        try:
+            with self.assertRaises(ValueError):
+                from entropyscan.core import scan_file
+                scan_file(path, block_size=0)
+        finally:
+            os.remove(path)
+
+    def test_scan_file_negative_max_bytes_raises(self):
+        fd, path = tempfile.mkstemp(suffix=".bin")
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(b"A" * 256)
+        try:
+            with self.assertRaises(ValueError):
+                from entropyscan.core import scan_file
+                scan_file(path, max_bytes=-1)
+        finally:
+            os.remove(path)
+
+    # --- core: ScanReport.regions / flagged_blocks validation ---
+
+    def test_regions_unknown_severity_raises(self):
+        report = scan_bytes(b"\x00" * 512, block_size=256)
+        with self.assertRaises(ValueError):
+            report.regions("bogus")
+
+    def test_flagged_blocks_unknown_severity_raises(self):
+        report = scan_bytes(b"\x00" * 512, block_size=256)
+        with self.assertRaises(ValueError):
+            report.flagged_blocks("notaseverity")
+
+    # --- core: scan / to_json convenience aliases ---
+
+    def test_scan_alias_works(self):
+        fd, path = tempfile.mkstemp(suffix=".bin")
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(b"\x00" * 1024)
+        try:
+            from entropyscan.core import scan
+            report = scan(path)
+            self.assertEqual(report.overall_severity, "low")
+        finally:
+            os.remove(path)
+
+    def test_to_json_alias_returns_valid_json(self):
+        from entropyscan.core import to_json
+        report = scan_bytes(b"A" * 256, block_size=128)
+        result = to_json(report)
+        parsed = json.loads(result)
+        self.assertIn("blocks", parsed)
+        self.assertEqual(parsed["block_size"], 128)
+
+    # --- CLI: negative/zero numeric args ---
+
+    def test_cli_zero_block_size_exit_2(self):
+        fd, path = tempfile.mkstemp(suffix=".bin")
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(b"A" * 256)
+        try:
+            rc = main(["scan", path, "--block-size", "0"])
+            self.assertEqual(rc, 2)
+        finally:
+            os.remove(path)
+
+    def test_cli_negative_max_bytes_exit_2(self):
+        fd, path = tempfile.mkstemp(suffix=".bin")
+        with os.fdopen(fd, "wb") as fh:
+            fh.write(b"A" * 256)
+        try:
+            rc = main(["scan", path, "--max-bytes", "-1"])
+            self.assertEqual(rc, 2)
+        finally:
+            os.remove(path)
+
+    # --- scan_bytes: empty input ---
+
+    def test_scan_bytes_empty(self):
+        report = scan_bytes(b"", block_size=256)
+        self.assertEqual(len(report.blocks), 0)
+        self.assertEqual(report.mean_entropy, 0.0)
+        self.assertEqual(report.max_entropy, 0.0)
+        self.assertEqual(report.min_entropy, 0.0)
+        self.assertEqual(report.overall_severity, "low")
+
+
 if __name__ == "__main__":
     unittest.main()

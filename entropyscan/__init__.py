@@ -1,11 +1,18 @@
 """entropyscan — part of the Cognis Neural Suite."""
-try:  # re-export the tool's public API + identity from core
-    from entropyscan.core import *  # noqa: F401,F403
-except Exception:  # pragma: no cover
-    pass
-try:
-    from entropyscan.core import TOOL_NAME, TOOL_VERSION
-except Exception:  # pragma: no cover
-    TOOL_NAME = "entropyscan"
-    TOOL_VERSION = "0.1.0"
+from entropyscan.core import (  # noqa: F401
+    TOOL_NAME,
+    TOOL_VERSION,
+    shannon_entropy,
+    classify,
+    scan_bytes,
+    scan_file,
+    scan,
+    to_json,
+    BlockResult,
+    ScanReport,
+    DEFAULT_BLOCK_SIZE,
+    MAX_BYTES_DEFAULT,
+    SEVERITY_ORDER,
+)
+
 __version__ = TOOL_VERSION

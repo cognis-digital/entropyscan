@@ -7,10 +7,14 @@ file, score each block, and classify regions by severity.
 """
 from __future__ import annotations
 
+import json
 import math
 import os
 from dataclasses import dataclass, field, asdict
 from typing import List, Optional
+
+TOOL_NAME = "entropyscan"
+TOOL_VERSION = "0.1.0"
 
 # Entropy thresholds in bits/byte. Tuned to match common forensic practice:
 # >7.5 is the classic "encrypted/compressed" heuristic used by binwalk et al.
@@ -103,11 +107,21 @@ class ScanReport:
         return counts
 
     def flagged_blocks(self, min_severity: str = "high") -> List[BlockResult]:
+        if min_severity not in SEVERITY_ORDER:
+            raise ValueError(
+                f"Unknown severity {min_severity!r}; "
+                f"choose from {list(SEVERITY_ORDER)}"
+            )
         floor = SEVERITY_ORDER[min_severity]
         return [b for b in self.blocks if SEVERITY_ORDER[b.severity] >= floor]
 
     def regions(self, min_severity: str = "high") -> List[dict]:
         """Coalesce consecutive flagged blocks into contiguous regions."""
+        if min_severity not in SEVERITY_ORDER:
+            raise ValueError(
+                f"Unknown severity {min_severity!r}; "
+                f"choose from {list(SEVERITY_ORDER)}"
+            )
         floor = SEVERITY_ORDER[min_severity]
         out: List[dict] = []
         cur: Optional[dict] = None
@@ -198,7 +212,16 @@ def scan_file(
     """Stream a file from disk and compute per-block entropy."""
     if block_size <= 0:
         raise ValueError("block_size must be positive")
-    total_size = os.path.getsize(path)
+    if max_bytes <= 0:
+        raise ValueError("max_bytes must be positive")
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"No such file: {path!r}")
+    if not os.path.isfile(path):
+        raise ValueError(f"Not a regular file: {path!r}")
+    try:
+        total_size = os.path.getsize(path)
+    except OSError as exc:
+        raise OSError(f"Cannot stat {path!r}: {exc}") from exc
     blocks: List[BlockResult] = []
     idx = 0
     offset = 0
@@ -234,3 +257,17 @@ def scan_file(
         blocks=blocks,
         truncated=truncated,
     )
+
+
+# ---------------------------------------------------------------------------
+# Convenience aliases used by mcp_server and external callers
+# ---------------------------------------------------------------------------
+
+def scan(path: str, **kwargs) -> ScanReport:
+    """Alias for :func:`scan_file` — scan a path and return a report."""
+    return scan_file(path, **kwargs)
+
+
+def to_json(report: ScanReport) -> str:
+    """Serialize a :class:`ScanReport` to a compact JSON string."""
+    return json.dumps(report.to_dict())

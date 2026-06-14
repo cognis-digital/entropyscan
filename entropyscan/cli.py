@@ -239,6 +239,22 @@ def main(argv: Optional[List[str]] = None) -> int:
         parser.print_help()
         return 2
 
+    # Validate numeric arguments early so we can print clear messages.
+    if args.block_size <= 0:
+        print(
+            f"{TOOL_NAME}: error: --block-size must be a positive integer, "
+            f"got {args.block_size}",
+            file=sys.stderr,
+        )
+        return 2
+    if args.max_bytes <= 0:
+        print(
+            f"{TOOL_NAME}: error: --max-bytes must be a positive integer, "
+            f"got {args.max_bytes}",
+            file=sys.stderr,
+        )
+        return 2
+
     try:
         report = scan_file(
             args.path,

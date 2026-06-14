@@ -32,3 +32,10 @@ entropyscan = "entropyscan.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["entropyscan"]
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["F", "E"]
+per-file-ignores = {"entropyscan/cli.py" = ["E501"], "entropyscan/mcp_server.py" = ["E501"]}
