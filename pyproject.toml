@@ -34,3 +34,6 @@ entropyscan = "entropyscan.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["entropyscan"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
