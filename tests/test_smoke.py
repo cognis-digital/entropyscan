@@ -16,7 +16,16 @@ from entropyscan import (  # noqa: E402
     classify,
     scan_bytes,
 )
-from entropyscan.cli import main, render_html, render_json, render_table  # noqa: E402
+from entropyscan.cli import (  # noqa: E402
+    main,
+    render_html,
+    render_json,
+    render_sarif,
+    render_table,
+)
+from entropyscan import scan_file  # noqa: E402
+
+_REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def _mixed_file() -> str:
@@ -63,7 +72,11 @@ class TestScan(unittest.TestCase):
         path = _mixed_file()
         try:
             from entropyscan import scan_file
-            report = scan_file(path, block_size=256)
+            # Use a >=512B window: a 256B block of random data tops out near
+            # ~7.27 bits/byte (only 256 samples over 256 symbols), so it can
+            # never reach the 7.5 "critical" threshold. A 512B+ window lets a
+            # genuinely random payload classify as critical.
+            report = scan_file(path, block_size=512)
             self.assertEqual(report.overall_severity, "critical")
             regions = report.regions("high")
             self.assertTrue(regions)
@@ -101,6 +114,30 @@ class TestRenderers(unittest.TestCase):
         self.assertIn("<style>", out)
         self.assertIn("ENTROPYSCAN report", out)
 
+    def test_sarif_valid(self):
+        # Build a report that has at least one flagged region.
+        rng = random.Random(3)
+        data = b"AAAA" * 1024 + bytes(rng.randrange(256) for _ in range(8192))
+        report = scan_bytes(data, block_size=4096, path="evidence.bin")
+        out = render_sarif(report, "high")
+        doc = json.loads(out)
+        self.assertEqual(doc["version"], "2.1.0")
+        self.assertIn("$schema", doc)
+        run = doc["runs"][0]
+        self.assertEqual(run["tool"]["driver"]["name"], TOOL_NAME)
+        self.assertTrue(run["results"], "expected at least one SARIF result")
+        res = run["results"][0]
+        self.assertEqual(res["level"], "error")
+        loc = res["locations"][0]["physicalLocation"]
+        self.assertEqual(loc["artifactLocation"]["uri"], "evidence.bin")
+        self.assertIn("byteOffset", loc["region"])
+        self.assertIn("byteLength", loc["region"])
+
+    def test_sarif_empty_when_clean(self):
+        report = scan_bytes(b"\x00" * 8192, block_size=4096)
+        doc = json.loads(render_sarif(report, "high"))
+        self.assertEqual(doc["runs"][0]["results"], [])
+
 
 class TestCli(unittest.TestCase):
     def test_exit_1_on_finding(self):
@@ -133,6 +170,40 @@ class TestCli(unittest.TestCase):
         )
         self.assertEqual(proc.returncode, 0)
         self.assertIn(TOOL_VERSION, proc.stdout)
+
+
+class TestDemos(unittest.TestCase):
+    """Each shipped demo must actually produce its intended finding."""
+
+    # (relative path under demos/, should it flag at --min-severity high?)
+    DEMOS = [
+        ("04-packed-elf/sample.bin", True),
+        ("05-office-macro/sample.doc", True),
+        ("06-pcap-tls/capture.pcap", True),
+        ("07-leaked-secret/config.bundle", True),
+        ("08-clean-release/artifact.txt", False),
+        ("09-stego-carrier/photo.png", True),
+        ("10-memory-dump/process.dmp", True),
+    ]
+
+    def test_demo_inputs_exist(self):
+        for rel, _ in self.DEMOS:
+            p = os.path.join(_REPO_ROOT, "demos", rel)
+            self.assertTrue(os.path.exists(p), f"missing demo input: {rel}")
+
+    def test_demos_fire_as_documented(self):
+        for rel, should_flag in self.DEMOS:
+            p = os.path.join(_REPO_ROOT, "demos", rel)
+            if not os.path.exists(p):
+                self.skipTest(f"demo input not present: {rel}")
+            report = scan_file(p, block_size=4096)
+            flagged = bool(report.regions("high"))
+            self.assertEqual(
+                flagged, should_flag,
+                f"{rel}: expected flagged={should_flag}, got {flagged} "
+                f"(overall={report.overall_severity}, "
+                f"maxH={report.max_entropy:.3f})",
+            )
 
 
 if __name__ == "__main__":

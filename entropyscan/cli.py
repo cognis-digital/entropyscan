@@ -83,6 +83,89 @@ def render_table(report: ScanReport, min_severity: str) -> str:
     return "\n".join(lines)
 
 
+_SARIF_LEVEL = {
+    "low": "note",
+    "medium": "warning",
+    "high": "error",
+    "critical": "error",
+}
+
+
+def render_sarif(report: ScanReport, min_severity: str) -> str:
+    """Render flagged regions as SARIF 2.1.0 (code-scanning compatible).
+
+    Each coalesced high-entropy region becomes one result, located by byte
+    range so GitHub code-scanning / any SARIF viewer can ingest it.
+    """
+    regions = report.regions(min_severity)
+    results = []
+    for i, r in enumerate(regions):
+        results.append({
+            "ruleId": "entropyscan/high-entropy-region",
+            "level": _SARIF_LEVEL.get(r["severity"], "warning"),
+            "message": {
+                "text": (
+                    f"High-entropy region ({r['severity']}, "
+                    f"max {r['max_entropy']:.3f} bits/byte over "
+                    f"{r['blocks']} block(s)) at bytes "
+                    f"{r['start']}-{r['end']}. Indicates packed, encrypted, "
+                    f"or compressed content."
+                )
+            },
+            "locations": [{
+                "physicalLocation": {
+                    "artifactLocation": {"uri": report.path},
+                    "region": {
+                        "byteOffset": r["start"],
+                        "byteLength": r["end"] - r["start"],
+                    },
+                }
+            }],
+            "properties": {
+                "severity": r["severity"],
+                "maxEntropy": round(r["max_entropy"], 4),
+                "blocks": r["blocks"],
+            },
+            "partialFingerprints": {
+                "regionIndex": str(i),
+                "byteRange": f"{r['start']}-{r['end']}",
+            },
+        })
+
+    sarif = {
+        "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+        "version": "2.1.0",
+        "runs": [{
+            "tool": {
+                "driver": {
+                    "name": TOOL_NAME,
+                    "version": TOOL_VERSION,
+                    "informationUri": "https://github.com/cognis-digital/entropyscan",
+                    "rules": [{
+                        "id": "entropyscan/high-entropy-region",
+                        "name": "HighEntropyRegion",
+                        "shortDescription": {
+                            "text": "Packed/encrypted/high-entropy region"
+                        },
+                        "fullDescription": {
+                            "text": (
+                                "A contiguous region whose Shannon entropy "
+                                "meets or exceeds the configured severity "
+                                "threshold, indicating compressed, encrypted, "
+                                "or packed content."
+                            )
+                        },
+                        "helpUri": "https://github.com/cognis-digital/entropyscan",
+                        "defaultConfiguration": {"level": "error"},
+                    }],
+                }
+            },
+            "results": results,
+        }],
+    }
+    return json.dumps(sarif, indent=2)
+
+
 def render_json(report: ScanReport, min_severity: str) -> str:
     payload = report.to_dict()
     payload["tool"] = TOOL_NAME
@@ -217,8 +300,9 @@ def build_parser() -> argparse.ArgumentParser:
         help="Severity that counts as a finding / triggers exit 1 (default high).",
     )
     scan.add_argument(
-        "--format", choices=["table", "json", "html"], default="table",
-        help="Output format (default table). 'html' writes a shareable report.",
+        "--format", choices=["table", "json", "html", "sarif"], default="table",
+        help="Output format (default table). 'html' writes a shareable report; "
+             "'sarif' emits SARIF 2.1.0 for code-scanning / CI.",
     )
     scan.add_argument(
         "--output", "-o", default=None,
@@ -254,6 +338,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.format == "json":
         out = render_json(report, args.min_severity)
+    elif args.format == "sarif":
+        out = render_sarif(report, args.min_severity)
     elif args.format == "html":
         out = render_html(report, args.min_severity)
     else:

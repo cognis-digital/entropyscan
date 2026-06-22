@@ -43,8 +43,9 @@ entropyscan scan .            # → prioritized findings in seconds
 4. **Read the output** — `entropyscan` exits `1` when flagged regions are found (else `0`). Emit JSON or write a shareable HTML report:
 
    ```bash
-   entropyscan scan suspicious.bin --format json -o report.json
-   entropyscan scan suspicious.bin --format html -o report.html
+   entropyscan scan suspicious.bin --format json  -o report.json
+   entropyscan scan suspicious.bin --format html  -o report.html
+   entropyscan scan suspicious.bin --format sarif -o report.sarif   # code-scanning
    ```
 
 5. **Automate in CI** — gate artifacts on high-entropy content:
@@ -56,7 +57,7 @@ entropyscan scan .            # → prioritized findings in seconds
 
 ## Contents
 
-- [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
+- [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Demos](#demos) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
 
 <a name="why"></a>
 ## Why entropyscan?
@@ -74,6 +75,8 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 - ✅ Classify
 - ✅ Scan Bytes
 - ✅ Scan File
+- ✅ Output as table · JSON · HTML · **SARIF 2.1.0** (code-scanning ready)
+- ✅ 10 real-use-case [demos](#demos) with verified findings
 - ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
 - ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
 
@@ -101,6 +104,39 @@ $ entropyscan scan .
   [MEDIUM  ] ENT-002  another signal              (./config.yaml)
 
   2 findings · risk score 5 · 38ms
+```
+
+<div align="right"><a href="#top">↑ back to top</a></div>
+
+<a name="demos"></a>
+## Demos — real triage scenarios
+
+Each folder under [`demos/`](demos/) is a self-contained, **authorized-use**
+scenario: a realistic input file in the tool's real input format plus a
+`SCENARIO.md` that explains where the data came from, the exact command to
+run, what to expect, and how to act on the finding. Every demo input is
+synthetic and seeded (no real malware, hashes, or credentials), and each one
+is verified by the test suite to actually produce its documented result.
+
+| Demo | Scenario | Fires at `high`? |
+|---|---|:---:|
+| [`01-basic`](demos/01-basic/) | Firmware blob with a packed tail | ✅ |
+| [`02-clean`](demos/02-clean/) | Plain text — negative control | — |
+| [`03-mixed`](demos/03-mixed/) | Mixed low/high regions | ✅ |
+| [`04-packed-elf`](demos/04-packed-elf/) | UPX-style packed executable (stub + compressed body) | ✅ |
+| [`05-office-macro`](demos/05-office-macro/) | OLE2 document hiding a compressed macro stream | ✅ |
+| [`06-pcap-tls`](demos/06-pcap-tls/) | Packet capture with an encrypted exfil flow | ✅ |
+| [`07-leaked-secret`](demos/07-leaked-secret/) | Config bundle that leaked a binary keystore | ✅ |
+| [`08-clean-release`](demos/08-clean-release/) | Clean release artifact — negative control | — |
+| [`09-stego-carrier`](demos/09-stego-carrier/) | Image with data hidden past `IEND` | ✅ |
+| [`10-memory-dump`](demos/10-memory-dump/) | Process dump with an injected high-entropy region | ✅ |
+
+```bash
+# Regenerate every demo input deterministically
+python demos/_make_all.py
+
+# Run one and read the result
+python -m entropyscan scan demos/04-packed-elf/sample.bin
 ```
 
 <div align="right"><a href="#top">↑ back to top</a></div>

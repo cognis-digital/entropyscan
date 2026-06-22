@@ -1,0 +1,611 @@
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+def transform(records):
+    out = []
+    for r in records:
+        out.append({'id': r['id'], 'value': r['value'] * 2})
+    return out
+
+# configuration table
+id,name,region,value
+0,item-0000,us-east-0,0
+1,item-0001,us-east-1,7
+2,item-0002,us-east-2,14
+3,item-0003,us-east-0,21
+4,item-0004,us-east-1,28
+5,item-0005,us-east-2,35
+6,item-0006,us-east-0,42
+7,item-0007,us-east-1,49
+8,item-0008,us-east-2,56
+9,item-0009,us-east-0,63
+10,item-0010,us-east-1,70
+11,item-0011,us-east-2,77
+12,item-0012,us-east-0,84
+13,item-0013,us-east-1,91
+14,item-0014,us-east-2,98
+15,item-0015,us-east-0,105
+16,item-0016,us-east-1,112
+17,item-0017,us-east-2,119
+18,item-0018,us-east-0,126
+19,item-0019,us-east-1,133
+20,item-0020,us-east-2,140
+21,item-0021,us-east-0,147
+22,item-0022,us-east-1,154
+23,item-0023,us-east-2,161
+24,item-0024,us-east-0,168
+25,item-0025,us-east-1,175
+26,item-0026,us-east-2,182
+27,item-0027,us-east-0,189
+28,item-0028,us-east-1,196
+29,item-0029,us-east-2,203
+30,item-0030,us-east-0,210
+31,item-0031,us-east-1,217
+32,item-0032,us-east-2,224
+33,item-0033,us-east-0,231
+34,item-0034,us-east-1,238
+35,item-0035,us-east-2,245
+36,item-0036,us-east-0,252
+37,item-0037,us-east-1,259
+38,item-0038,us-east-2,266
+39,item-0039,us-east-0,273
+40,item-0040,us-east-1,280
+41,item-0041,us-east-2,287
+42,item-0042,us-east-0,294
+43,item-0043,us-east-1,301
+44,item-0044,us-east-2,308
+45,item-0045,us-east-0,315
+46,item-0046,us-east-1,322
+47,item-0047,us-east-2,329
+48,item-0048,us-east-0,336
+49,item-0049,us-east-1,343
+50,item-0050,us-east-2,350
+51,item-0051,us-east-0,357
+52,item-0052,us-east-1,364
+53,item-0053,us-east-2,371
+54,item-0054,us-east-0,378
+55,item-0055,us-east-1,385
+56,item-0056,us-east-2,392
+57,item-0057,us-east-0,399
+58,item-0058,us-east-1,406
+59,item-0059,us-east-2,413
+60,item-0060,us-east-0,420
+61,item-0061,us-east-1,427
+62,item-0062,us-east-2,434
+63,item-0063,us-east-0,441
+64,item-0064,us-east-1,448
+65,item-0065,us-east-2,455
+66,item-0066,us-east-0,462
+67,item-0067,us-east-1,469
+68,item-0068,us-east-2,476
+69,item-0069,us-east-0,483
+70,item-0070,us-east-1,490
+71,item-0071,us-east-2,497
+72,item-0072,us-east-0,504
+73,item-0073,us-east-1,511
+74,item-0074,us-east-2,518
+75,item-0075,us-east-0,525
+76,item-0076,us-east-1,532
+77,item-0077,us-east-2,539
+78,item-0078,us-east-0,546
+79,item-0079,us-east-1,553
+80,item-0080,us-east-2,560
+81,item-0081,us-east-0,567
+82,item-0082,us-east-1,574
+83,item-0083,us-east-2,581
+84,item-0084,us-east-0,588
+85,item-0085,us-east-1,595
+86,item-0086,us-east-2,602
+87,item-0087,us-east-0,609
+88,item-0088,us-east-1,616
+89,item-0089,us-east-2,623
+90,item-0090,us-east-0,630
+91,item-0091,us-east-1,637
+92,item-0092,us-east-2,644
+93,item-0093,us-east-0,651
+94,item-0094,us-east-1,658
+95,item-0095,us-east-2,665
+96,item-0096,us-east-0,672
+97,item-0097,us-east-1,679
+98,item-0098,us-east-2,686
+99,item-0099,us-east-0,693
+100,item-0100,us-east-1,700
+101,item-0101,us-east-2,707
+102,item-0102,us-east-0,714
+103,item-0103,us-east-1,721
+104,item-0104,us-east-2,728
+105,item-0105,us-east-0,735
+106,item-0106,us-east-1,742
+107,item-0107,us-east-2,749
+108,item-0108,us-east-0,756
+109,item-0109,us-east-1,763
+110,item-0110,us-east-2,770
+111,item-0111,us-east-0,777
+112,item-0112,us-east-1,784
+113,item-0113,us-east-2,791
+114,item-0114,us-east-0,798
+115,item-0115,us-east-1,805
+116,item-0116,us-east-2,812
+117,item-0117,us-east-0,819
+118,item-0118,us-east-1,826
+119,item-0119,us-east-2,833
+120,item-0120,us-east-0,840
+121,item-0121,us-east-1,847
+122,item-0122,us-east-2,854
+123,item-0123,us-east-0,861
+124,item-0124,us-east-1,868
+125,item-0125,us-east-2,875
+126,item-0126,us-east-0,882
+127,item-0127,us-east-1,889
+128,item-0128,us-east-2,896
+129,item-0129,us-east-0,903
+130,item-0130,us-east-1,910
+131,item-0131,us-east-2,917
+132,item-0132,us-east-0,924
+133,item-0133,us-east-1,931
+134,item-0134,us-east-2,938
+135,item-0135,us-east-0,945
+136,item-0136,us-east-1,952
+137,item-0137,us-east-2,959
+138,item-0138,us-east-0,966
+139,item-0139,us-east-1,973
+140,item-0140,us-east-2,980
+141,item-0141,us-east-0,987
+142,item-0142,us-east-1,994
+143,item-0143,us-east-2,1001
+144,item-0144,us-east-0,1008
+145,item-0145,us-east-1,1015
+146,item-0146,us-east-2,1022
+147,item-0147,us-east-0,1029
+148,item-0148,us-east-1,1036
+149,item-0149,us-east-2,1043
+150,item-0150,us-east-0,1050
+151,item-0151,us-east-1,1057
+152,item-0152,us-east-2,1064
+153,item-0153,us-east-0,1071
+154,item-0154,us-east-1,1078
+155,item-0155,us-east-2,1085
+156,item-0156,us-east-0,1092
+157,item-0157,us-east-1,1099
+158,item-0158,us-east-2,1106
+159,item-0159,us-east-0,1113
+160,item-0160,us-east-1,1120
+161,item-0161,us-east-2,1127
+162,item-0162,us-east-0,1134
+163,item-0163,us-east-1,1141
+164,item-0164,us-east-2,1148
+165,item-0165,us-east-0,1155
+166,item-0166,us-east-1,1162
+167,item-0167,us-east-2,1169
+168,item-0168,us-east-0,1176
+169,item-0169,us-east-1,1183
+170,item-0170,us-east-2,1190
+171,item-0171,us-east-0,1197
+172,item-0172,us-east-1,1204
+173,item-0173,us-east-2,1211
+174,item-0174,us-east-0,1218
+175,item-0175,us-east-1,1225
+176,item-0176,us-east-2,1232
+177,item-0177,us-east-0,1239
+178,item-0178,us-east-1,1246
+179,item-0179,us-east-2,1253
+180,item-0180,us-east-0,1260
+181,item-0181,us-east-1,1267
+182,item-0182,us-east-2,1274
+183,item-0183,us-east-0,1281
+184,item-0184,us-east-1,1288
+185,item-0185,us-east-2,1295
+186,item-0186,us-east-0,1302
+187,item-0187,us-east-1,1309
+188,item-0188,us-east-2,1316
+189,item-0189,us-east-0,1323
+190,item-0190,us-east-1,1330
+191,item-0191,us-east-2,1337
+192,item-0192,us-east-0,1344
+193,item-0193,us-east-1,1351
+194,item-0194,us-east-2,1358
+195,item-0195,us-east-0,1365
+196,item-0196,us-east-1,1372
+197,item-0197,us-east-2,1379
+198,item-0198,us-east-0,1386
+199,item-0199,us-east-1,1393
+200,item-0200,us-east-2,1400
+201,item-0201,us-east-0,1407
+202,item-0202,us-east-1,1414
+203,item-0203,us-east-2,1421
+204,item-0204,us-east-0,1428
+205,item-0205,us-east-1,1435
+206,item-0206,us-east-2,1442
+207,item-0207,us-east-0,1449
+208,item-0208,us-east-1,1456
+209,item-0209,us-east-2,1463
+210,item-0210,us-east-0,1470
+211,item-0211,us-east-1,1477
+212,item-0212,us-east-2,1484
+213,item-0213,us-east-0,1491
+214,item-0214,us-east-1,1498
+215,item-0215,us-east-2,1505
+216,item-0216,us-east-0,1512
+217,item-0217,us-east-1,1519
+218,item-0218,us-east-2,1526
+219,item-0219,us-east-0,1533
+220,item-0220,us-east-1,1540
+221,item-0221,us-east-2,1547
+222,item-0222,us-east-0,1554
+223,item-0223,us-east-1,1561
+224,item-0224,us-east-2,1568
+225,item-0225,us-east-0,1575
+226,item-0226,us-east-1,1582
+227,item-0227,us-east-2,1589
+228,item-0228,us-east-0,1596
+229,item-0229,us-east-1,1603
+230,item-0230,us-east-2,1610
+231,item-0231,us-east-0,1617
+232,item-0232,us-east-1,1624
+233,item-0233,us-east-2,1631
+234,item-0234,us-east-0,1638
+235,item-0235,us-east-1,1645
+236,item-0236,us-east-2,1652
+237,item-0237,us-east-0,1659
+238,item-0238,us-east-1,1666
+239,item-0239,us-east-2,1673
+240,item-0240,us-east-0,1680
+241,item-0241,us-east-1,1687
+242,item-0242,us-east-2,1694
+243,item-0243,us-east-0,1701
+244,item-0244,us-east-1,1708
+245,item-0245,us-east-2,1715
+246,item-0246,us-east-0,1722
+247,item-0247,us-east-1,1729
+248,item-0248,us-east-2,1736
+249,item-0249,us-east-0,1743
+250,item-0250,us-east-1,1750
+251,item-0251,us-east-2,1757
+252,item-0252,us-east-0,1764
+253,item-0253,us-east-1,1771
+254,item-0254,us-east-2,1778
+255,item-0255,us-east-0,1785
+256,item-0256,us-east-1,1792
+257,item-0257,us-east-2,1799
+258,item-0258,us-east-0,1806
+259,item-0259,us-east-1,1813
+260,item-0260,us-east-2,1820
+261,item-0261,us-east-0,1827
+262,item-0262,us-east-1,1834
+263,item-0263,us-east-2,1841
+264,item-0264,us-east-0,1848
+265,item-0265,us-east-1,1855
+266,item-0266,us-east-2,1862
+267,item-0267,us-east-0,1869
+268,item-0268,us-east-1,1876
+269,item-0269,us-east-2,1883
+270,item-0270,us-east-0,1890
+271,item-0271,us-east-1,1897
+272,item-0272,us-east-2,1904
+273,item-0273,us-east-0,1911
+274,item-0274,us-east-1,1918
+275,item-0275,us-east-2,1925
+276,item-0276,us-east-0,1932
+277,item-0277,us-east-1,1939
+278,item-0278,us-east-2,1946
+279,item-0279,us-east-0,1953
+280,item-0280,us-east-1,1960
+281,item-0281,us-east-2,1967
+282,item-0282,us-east-0,1974
+283,item-0283,us-east-1,1981
+284,item-0284,us-east-2,1988
+285,item-0285,us-east-0,1995
+286,item-0286,us-east-1,2002
+287,item-0287,us-east-2,2009
+288,item-0288,us-east-0,2016
+289,item-0289,us-east-1,2023
+290,item-0290,us-east-2,2030
+291,item-0291,us-east-0,2037
+292,item-0292,us-east-1,2044
+293,item-0293,us-east-2,2051
+294,item-0294,us-east-0,2058
+295,item-0295,us-east-1,2065
+296,item-0296,us-east-2,2072
+297,item-0297,us-east-0,2079
+298,item-0298,us-east-1,2086
+299,item-0299,us-east-2,2093
+300,item-0300,us-east-0,2100
+301,item-0301,us-east-1,2107
+302,item-0302,us-east-2,2114
+303,item-0303,us-east-0,2121
+304,item-0304,us-east-1,2128
+305,item-0305,us-east-2,2135
+306,item-0306,us-east-0,2142
+307,item-0307,us-east-1,2149
+308,item-0308,us-east-2,2156
+309,item-0309,us-east-0,2163
+310,item-0310,us-east-1,2170
+311,item-0311,us-east-2,2177
+312,item-0312,us-east-0,2184
+313,item-0313,us-east-1,2191
+314,item-0314,us-east-2,2198
+315,item-0315,us-east-0,2205
+316,item-0316,us-east-1,2212
+317,item-0317,us-east-2,2219
+318,item-0318,us-east-0,2226
+319,item-0319,us-east-1,2233
+320,item-0320,us-east-2,2240
+321,item-0321,us-east-0,2247
+322,item-0322,us-east-1,2254
+323,item-0323,us-east-2,2261
+324,item-0324,us-east-0,2268
+325,item-0325,us-east-1,2275
+326,item-0326,us-east-2,2282
+327,item-0327,us-east-0,2289
+328,item-0328,us-east-1,2296
+329,item-0329,us-east-2,2303
+330,item-0330,us-east-0,2310
+331,item-0331,us-east-1,2317
+332,item-0332,us-east-2,2324
+333,item-0333,us-east-0,2331
+334,item-0334,us-east-1,2338
+335,item-0335,us-east-2,2345
+336,item-0336,us-east-0,2352
+337,item-0337,us-east-1,2359
+338,item-0338,us-east-2,2366
+339,item-0339,us-east-0,2373
+340,item-0340,us-east-1,2380
+341,item-0341,us-east-2,2387
+342,item-0342,us-east-0,2394
+343,item-0343,us-east-1,2401
+344,item-0344,us-east-2,2408
+345,item-0345,us-east-0,2415
+346,item-0346,us-east-1,2422
+347,item-0347,us-east-2,2429
+348,item-0348,us-east-0,2436
+349,item-0349,us-east-1,2443
+350,item-0350,us-east-2,2450
+351,item-0351,us-east-0,2457
+352,item-0352,us-east-1,2464
+353,item-0353,us-east-2,2471
+354,item-0354,us-east-0,2478
+355,item-0355,us-east-1,2485
+356,item-0356,us-east-2,2492
+357,item-0357,us-east-0,2499
+358,item-0358,us-east-1,2506
+359,item-0359,us-east-2,2513
+360,item-0360,us-east-0,2520
+361,item-0361,us-east-1,2527
+362,item-0362,us-east-2,2534
+363,item-0363,us-east-0,2541
+364,item-0364,us-east-1,2548
+365,item-0365,us-east-2,2555
+366,item-0366,us-east-0,2562
+367,item-0367,us-east-1,2569
+368,item-0368,us-east-2,2576
+369,item-0369,us-east-0,2583
+370,item-0370,us-east-1,2590
+371,item-0371,us-east-2,2597
+372,item-0372,us-east-0,2604
+373,item-0373,us-east-1,2611
+374,item-0374,us-east-2,2618
+375,item-0375,us-east-0,2625
+376,item-0376,us-east-1,2632
+377,item-0377,us-east-2,2639
+378,item-0378,us-east-0,2646
+379,item-0379,us-east-1,2653
+380,item-0380,us-east-2,2660
+381,item-0381,us-east-0,2667
+382,item-0382,us-east-1,2674
+383,item-0383,us-east-2,2681
+384,item-0384,us-east-0,2688
+385,item-0385,us-east-1,2695
+386,item-0386,us-east-2,2702
+387,item-0387,us-east-0,2709
+388,item-0388,us-east-1,2716
+389,item-0389,us-east-2,2723
+390,item-0390,us-east-0,2730
+391,item-0391,us-east-1,2737
+392,item-0392,us-east-2,2744
+393,item-0393,us-east-0,2751
+394,item-0394,us-east-1,2758
+395,item-0395,us-east-2,2765
+396,item-0396,us-east-0,2772
+397,item-0397,us-east-1,2779
+398,item-0398,us-east-2,2786
+399,item-0399,us-east-0,2793
