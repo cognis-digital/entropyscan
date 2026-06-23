@@ -1,9 +1,12 @@
 {
   "name": "@cognis/entropyscan",
-  "version": "0.2.0",
-  "description": "JavaScript port of entropyscan (Cognis Neural Suite)",
+  "version": "0.4.0",
+  "description": "JavaScript/Node port of entropyscan (Cognis Neural Suite)",
   "bin": {
     "entropyscan": "index.js"
+  },
+  "scripts": {
+    "test": "node --test"
   },
   "license": "LicenseRef-COCL-1.0",
   "type": "module"

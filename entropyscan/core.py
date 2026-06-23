@@ -12,6 +12,38 @@ import os
 from dataclasses import dataclass, field, asdict
 from typing import Iterable, List, Optional
 
+# --- tool identity (single source of truth) ---
+TOOL_NAME = "entropyscan"
+
+
+def _read_version() -> str:
+    """Resolve the version from the repo VERSION file, then packaging metadata,
+    then a safe default. Keeps the CLI banner in sync with the release tag."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    for candidate in (
+        os.path.join(here, "..", "VERSION"),
+        os.path.join(here, "VERSION"),
+    ):
+        try:
+            with open(candidate, "r", encoding="utf-8") as fh:
+                v = fh.read().strip()
+            if v:
+                return v
+        except OSError:
+            continue
+    try:  # installed wheel
+        from importlib.metadata import version, PackageNotFoundError
+        try:
+            return version("cognis-entropyscan")
+        except PackageNotFoundError:
+            pass
+    except Exception:
+        pass
+    return "0.4.0"
+
+
+TOOL_VERSION = _read_version()
+
 # Entropy thresholds in bits/byte. Tuned to match common forensic practice:
 # >7.5 is the classic "encrypted/compressed" heuristic used by binwalk et al.
 CRITICAL_THRESHOLD = 7.5   # almost certainly encrypted/compressed/packed
@@ -234,3 +266,34 @@ def scan_file(
         blocks=blocks,
         truncated=truncated,
     )
+
+
+def scan(target: str, *, block_size: int = DEFAULT_BLOCK_SIZE,
+         max_bytes: int = MAX_BYTES_DEFAULT) -> ScanReport:
+    """Convenience alias for :func:`scan_file` (used by the MCP server/SDK)."""
+    return scan_file(target, block_size=block_size, max_bytes=max_bytes)
+
+
+def to_json(report: "ScanReport", *, min_severity: str = "high") -> str:
+    """Serialize a :class:`ScanReport` to the canonical JSON string.
+
+    Mirrors the CLI's ``--format json`` payload so SDK/MCP consumers and the
+    command line speak exactly the same shape.
+    """
+    import json as _json
+    payload = report.to_dict()
+    payload["tool"] = TOOL_NAME
+    payload["version"] = TOOL_VERSION
+    payload["min_severity"] = min_severity
+    payload["flagged_regions"] = report.regions(min_severity)
+    payload["flagged"] = bool(report.regions(min_severity))
+    return _json.dumps(payload, indent=2)
+
+
+__all__ = [
+    "TOOL_NAME", "TOOL_VERSION",
+    "CRITICAL_THRESHOLD", "HIGH_THRESHOLD", "MEDIUM_THRESHOLD",
+    "SEVERITY_ORDER", "DEFAULT_BLOCK_SIZE", "MAX_BYTES_DEFAULT",
+    "shannon_entropy", "classify", "BlockResult", "ScanReport",
+    "scan_bytes", "scan_file", "scan", "to_json",
+]

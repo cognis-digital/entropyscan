@@ -17,8 +17,18 @@
 
 ```bash
 pip install cognis-entropyscan
-entropyscan scan .            # → prioritized findings in seconds
+entropyscan scan suspicious.bin     # → flagged high-entropy regions in seconds
 ```
+
+> **What it does, precisely.** `entropyscan` slides a fixed-size window across a
+> file and measures the **Shannon entropy** of each block in *bits per byte*
+> (0.0 → 8.0). Random, encrypted, compressed, or packed data trends toward 8.0;
+> structured data (code, text, tables, zero-padding) sits well below. Blocks are
+> classified `low / medium / high / critical`, consecutive flagged blocks are
+> coalesced into **byte-offset regions**, and the result is emitted as a table,
+> JSON, a shareable HTML report, or **SARIF 2.1.0** for code-scanning. It is
+> **passive and offline** — it reads a file you point it at and never opens a
+> network connection.
 
 ## Usage — step by step
 
@@ -57,7 +67,7 @@ entropyscan scan .            # → prioritized findings in seconds
 
 ## Contents
 
-- [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Demos](#demos) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Related](#related) · [Contributing](#contributing)
+- [Why entropyscan?](#why) · [Features](#features) · [Quick start](#quick-start) · [Example](#example) · [Demos](#demos) · [Architecture](#architecture) · [AI stack](#ai-stack) · [How it compares](#how-it-compares) · [Integrations](#integrations) · [Install anywhere](#install-anywhere) · [Scope & safety](#scope) · [Related](#related) · [Contributing](#contributing)
 
 <a name="why"></a>
 ## Why entropyscan?
@@ -71,14 +81,15 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 <a name="features"></a>
 ## Features
 
-- ✅ Shannon Entropy
-- ✅ Classify
-- ✅ Scan Bytes
-- ✅ Scan File
-- ✅ Output as table · JSON · HTML · **SARIF 2.1.0** (code-scanning ready)
-- ✅ 10 real-use-case [demos](#demos) with verified findings
-- ✅ Runs on Linux/macOS/Windows · Docker · devcontainer
-- ✅ Ports in Python, JavaScript, Go, and Rust (`ports/`)
+- ✅ **Per-block Shannon entropy** (bits/byte, 0–8) with a sliding window (`--block-size`)
+- ✅ **Four-level severity** (`low / medium / high / critical`) with forensic-standard thresholds (5.5 / 6.8 / 7.5)
+- ✅ **Region coalescing** — consecutive flagged blocks merged into byte-offset regions
+- ✅ Output as **table · JSON · self-contained HTML report · SARIF 2.1.0** (GitHub code-scanning ready)
+- ✅ **CI-friendly exit codes** (`0` clean / `1` finding / `2` error) gated by `--min-severity`
+- ✅ **Streaming + safety cap** (`--max-bytes`) — handles large files without loading them whole
+- ✅ 10 real-use-case [demos](#demos), each **verified by the test suite** to fire (or not) as documented
+- ✅ Runs on Linux/macOS/Windows · Docker · devcontainer · **air-gapped** (stdlib only, no network)
+- ✅ Real, CI-built ports in **Python, JavaScript/Node, Go, and Rust** (`ports/`) — each mirrors `scan` and shares the JSON shape + exit codes
 
 <div align="right"><a href="#top">↑ back to top</a></div>
 
@@ -88,23 +99,75 @@ Flag packed/encrypted/high-entropy regions in files — without standing up heav
 ```bash
 pip install cognis-entropyscan
 entropyscan --version
-entropyscan scan .                       # scan current project
-entropyscan scan . --format json         # machine-readable
-entropyscan scan . --fail-on high        # CI gate (non-zero exit)
+entropyscan scan suspicious.bin                       # human-readable table
+entropyscan scan suspicious.bin --format json         # machine-readable
+entropyscan scan suspicious.bin --min-severity high   # CI gate (exit 1 on finding)
 ```
+
+**CLI surface (one subcommand, `scan`):**
+
+| Flag | Default | Meaning |
+|---|---|---|
+| `path` | — | File to analyze (positional) |
+| `--block-size N` | `4096` | Window size in bytes |
+| `--min-severity {low,medium,high,critical}` | `high` | Severity that counts as a finding / triggers exit `1` |
+| `--format {table,json,html,sarif}` | `table` | Output format |
+| `--output, -o FILE` | stdout | Write the report to a file |
+| `--max-bytes N` | `268435456` | Cap bytes read (safety limit) |
+
+**Exit codes:** `0` = clean · `1` = a region met/exceeded `--min-severity` · `2` = usage/IO error.
 
 <div align="right"><a href="#top">↑ back to top</a></div>
 
 <a name="example"></a>
 ## Example
 
-```text
-$ entropyscan scan .
-  [HIGH    ] ENT-001  example finding             (./src/app.py)
-  [MEDIUM  ] ENT-002  another signal              (./config.yaml)
+Real output against the bundled `demos/04-packed-elf/sample.bin` (a UPX-style
+packed executable: low-entropy stub followed by a compressed body):
 
-  2 findings · risk score 5 · 38ms
+```text
+$ entropyscan scan demos/04-packed-elf/sample.bin
+ENTROPYSCAN 0.4.0 - demos/04-packed-elf/sample.bin
+size=24934B  block=4096B  blocks=7  scanned=24934B
+entropy  mean=7.833  max=7.965  min=7.466  overall=CRITICAL
+counts   low=0  medium=0  high=1  critical=6
+
+Flagged regions (>= high):
+  range                   sev       maxH    blocks
+  0x00000000-0x00006166   critical  7.965   7
+
+Block map:
+  offset      H(bits)   sev       profile
+  0x00000000  7.584     critical  [###################-]
+  0x00001000  7.954     critical  [####################]
+  ...
 ```
+
+The same scan as JSON (truncated) — note the byte-offset `flagged_regions` and
+the per-block map that downstream tooling can ingest:
+
+```text
+$ entropyscan scan demos/04-packed-elf/sample.bin --format json
+{
+  "tool": "entropyscan",
+  "version": "0.4.0",
+  "path": "demos/04-packed-elf/sample.bin",
+  "size": 24934,
+  "mean_entropy": 7.8328,
+  "max_entropy": 7.9646,
+  "overall_severity": "critical",
+  "severity_counts": { "low": 0, "medium": 0, "high": 1, "critical": 6 },
+  "min_severity": "high",
+  "flagged": true,
+  "flagged_regions": [
+    { "start": 0, "end": 24934, "max_entropy": 7.9646, "severity": "critical", "blocks": 7 }
+  ],
+  "blocks": [ { "index": 0, "offset": 0, "size": 4096, "entropy": 7.5841, "severity": "critical" }, ... ]
+}
+```
+
+A clean text artifact (`demos/08-clean-release/artifact.txt`) produces
+`overall=LOW`, no flagged regions, and exit code `0`.
 
 <div align="right"><a href="#top">↑ back to top</a></div>
 
@@ -157,7 +220,7 @@ flowchart LR
 
 `entropyscan` is interoperable with every popular way of using AI:
 
-- **MCP server** — `entropyscan mcp` (Claude Desktop, Cursor, Cognis.Studio, [uncensored-fleet](https://github.com/cognis-digital/uncensored-fleet))
+- **MCP server** — `entropyscan mcp` exposes `scan()` as an MCP tool over stdio (install the extra: `pip install "cognis-entropyscan[mcp]"`) for Claude Desktop, Cursor, Cognis.Studio, and the [uncensored-fleet](https://github.com/cognis-digital/uncensored-fleet)
 - **OpenAI-compatible / JSON** — pipe `entropyscan scan . --format json` into any agent or LLM
 - **LangChain · CrewAI · AutoGen · LlamaIndex** — wrap the CLI/JSON as a tool in one line
 - **CI / scripts** — exit codes + SARIF for non-AI pipelines
@@ -173,7 +236,8 @@ flowchart LR
 | Single command, zero config | ✅ | ⚠️ |
 | JSON + SARIF for CI | ✅ | varies |
 | MCP-native (AI agents) | ✅ | ❌ |
-| Polyglot ports (JS/Go/Rust) | ✅ | ❌ |
+| Polyglot ports (JS/Go/Rust), CI-built | ✅ | ❌ |
+| Passive / offline / air-gap-ready | ✅ | varies |
 | Open license | ✅ COCL | varies |
 <div align="right"><a href="#top">↑ back to top</a></div>
 
@@ -220,9 +284,33 @@ PRs, new rules, and demo scenarios are welcome under the collaboration-pull mode
 
 ## Interoperability
 
-`{}` composes with the 300+ tool Cognis suite — JSON in/out and a shared
+`entropyscan` composes with the Cognis suite — JSON in/out and a shared
 OpenAI-compatible `/v1` backbone. See **[INTEROP.md](INTEROP.md)** for the
 suite map, composition patterns, and reference stacks.
+
+<a name="scope"></a>
+## Scope, safety & air-gap
+
+`entropyscan` is a **defensive, authorized-use** analysis tool.
+
+- **Passive and offline by design.** It reads a single local file you point it
+  at and computes statistics. It performs **no active scanning**, opens **no
+  network connections**, sends **no telemetry**, and executes nothing from the
+  files it inspects. The Python core and all ports depend only on their
+  language standard library.
+- **Air-gap / edge friendly.** Because there are no network calls and no
+  external data dependencies, `entropyscan` runs unchanged on a fully
+  disconnected host. `pip install` from a local wheel (or clone the repo and run
+  `python -m entropyscan`), and the polyglot ports compile to a single static
+  binary you can copy onto an isolated machine.
+- **High entropy is a signal, not a verdict.** A flagged region means the bytes
+  are statistically indistinguishable from random — which is *expected* for
+  legitimately compressed or encrypted content (archives, media, TLS, signed
+  blobs). Treat findings as triage leads, confirm with format-aware tooling, and
+  only analyze artifacts you are **authorized** to inspect.
+- **No fabricated intelligence.** Demo inputs are synthetic, seeded, and contain
+  no real malware, hashes, or credentials. The tool ships no CVE/vuln database
+  and makes no threat-intel claims of its own.
 
 ## License
 
