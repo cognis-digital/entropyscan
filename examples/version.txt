@@ -1,0 +1,3 @@
+$ entropyscan-emit --version
+
+entropyscan 0.4.0

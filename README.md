@@ -30,6 +30,77 @@ entropyscan scan suspicious.bin     # → flagged high-entropy regions in second
 > **passive and offline** — it reads a file you point it at and never opens a
 > network connection.
 
+
+<!-- cognis:example:start -->
+## 🔎 Example output
+
+Real, reproducible output from the tool — runs offline:
+
+```console
+$ entropyscan-emit --version
+entropyscan 0.4.0
+```
+
+```console
+$ entropyscan-emit --help
+usage: entropyscan [-h] [--version] {scan,mcp} ...
+
+Flag packed/encrypted/high-entropy regions in files you own.
+
+positional arguments:
+  {scan,mcp}
+    scan      Scan a file for high-entropy regions.
+    mcp       Run the MCP stdio server (exposes scan() as an MCP tool).
+              Requires the optional 'mcp' extra.
+
+options:
+  -h, --help  show this help message and exit
+  --version   show program's version number and exit
+```
+
+> Blocks above are real `entropyscan` output — reproduce them from a clone.
+
+**Sample result format** _(illustrative values — run on your own data for real findings):_
+
+```
+{
+"feed": {
+"type": "STIX",
+"data": [
+{
+"id": "12345",
+"created_by_ref": "user1",
+"modified_by_ref": "user2",
+"created": "2023-02-15T14:30:00Z",
+"modified": "2023-02-15T14:30:01Z",
+"feed_name": "My Feed",
+"spec_version": "2.0",
+"objects": [
+{
+"id": "obj1",
+"type": "indicator",
+"name": "Example Indicator",
+"description": "This is an example indicator.",
+"created_by_ref": "user1",
+"modified_by_ref": "user2",
+"created": "2023-02-15T14:30:00Z",
+"modified": "2023-02-15T14:30:01Z",
+"labels": ["example", "test"],
+"observables": [
+{
+"type": "url",
+"value": "https://www.example.com"
+}
+]
+}
+]
+}
+]
+}
+```
+
+<!-- cognis:example:end -->
+
 ## Usage — step by step
 
 1. **Install** the CLI:

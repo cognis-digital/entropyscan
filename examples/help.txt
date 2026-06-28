@@ -1,0 +1,15 @@
+$ entropyscan-emit --help
+
+usage: entropyscan [-h] [--version] {scan,mcp} ...
+
+Flag packed/encrypted/high-entropy regions in files you own.
+
+positional arguments:
+  {scan,mcp}
+    scan      Scan a file for high-entropy regions.
+    mcp       Run the MCP stdio server (exposes scan() as an MCP tool).
+              Requires the optional 'mcp' extra.
+
+options:
+  -h, --help  show this help message and exit
+  --version   show program's version number and exit
